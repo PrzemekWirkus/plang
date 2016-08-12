@@ -1,11 +1,11 @@
 CPP       := g++
 CPP_FLAGS := -Wall -g -O2
 LD_FLAGS  :=
-CPP_FILES := $(wildcard src/*.cpp)
+CPP_FILES := $(filter-out src/main.cpp, $(wildcard src/*.cpp))
 OBJ_FILES := $(addprefix build/,$(notdir $(CPP_FILES:.cpp=.o)))
 INCLUDES  := -I./include
 
-all: $(OBJ_FILES)
+all: $(OBJ_FILES) build/main.o
 	$(CPP) $(LD_FLAGS) $^ -o build/plang
 
 .PHONY: clean
