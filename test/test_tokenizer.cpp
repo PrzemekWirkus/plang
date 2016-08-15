@@ -20,7 +20,7 @@ TEST_CASE( "Tokenize empty string" , "[tokenizer]") {
 TEST_CASE( "Tokenize single characters" , "[tokenizer]") {
     // Test if tokenizer can get all singe character 
     // tokens parsed from soruce code
-    const char * str_empty = "@#{}()[]-+*/.,;\"";
+    const char * str_empty = "@#={}()[]-+*/.,;\"";
     
     PlangTokenizer tokenizer;
 

@@ -1,13 +1,13 @@
 #ifndef PLANG_TOKENIZER
 #define PLANG_TOKENIZER
 
+#include <map>
 #include <vector>
 #include <string>
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
 
-#define XXX 2
 
 class PlangTokenizer {
 
@@ -32,13 +32,26 @@ class PlangTokenizer {
     // Token types outputed by tokenizer
     struct Token {
         enum {
+            // Language values
             END = -1,   // EOF!
-            ID = -2,
+            ID  = -2,
             INT = -3,
             FLT = -4,
             STR = -5,
+
+            // Language keywords
+            RETURN_STMT = -100,
+            IF_STMT     = -200,
+            ELSE_STMT   = -201,
         };
     };  // Last read token
+
+    // Mapping between keyword and token
+    std::map<std::string, int> m_keyword_token_map = {
+        {"return",  Token::RETURN_STMT},
+        {"if",      Token::IF_STMT},
+        {"else",    Token::ELSE_STMT},
+    };
 
     int m_token;    // Last token read
 
@@ -90,6 +103,13 @@ class PlangTokenizer {
             while (std::isalpha(get_next_preview())) {
                 m_token_value.s += get_next();
             }
+
+            // If identifier is a keyword return keyword token
+            if (m_keyword_token_map.find(m_token_value.s) != m_keyword_token_map.end()) {
+                return m_keyword_token_map.at(m_token_value.s);
+            }
+
+            // Generic identifier
             return Token::ID;
         } else if (std::isdigit(m_ch)) {
             // INT: plain integer

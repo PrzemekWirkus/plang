@@ -1,5 +1,5 @@
 CPP       := g++
-CPP_FLAGS := -Wall -g -O2
+CPP_FLAGS := -Wall -g -O2 --std=c++11
 LD_FLAGS  :=
 CPP_FILES := $(filter-out src/main.cpp, $(wildcard src/*.cpp))
 OBJ_FILES := $(addprefix build/,$(notdir $(CPP_FILES:.cpp=.o)))
