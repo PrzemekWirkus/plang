@@ -1,18 +1,21 @@
-#ifndef PLANG_TOKENUZER
-#define PLANG_TOKENUZER
+#ifndef PLANG_TOKENIZER
+#define PLANG_TOKENIZER
 
 #include <vector>
 #include <string>
+#include <cstring>
+#include <cstdlib>
 #include <cctype>
 
-template <class T>
+#define XXX 2
+
 class PlangTokenizer {
 
     // Input buffer
-    std::vector<T> m_input;
+    std::vector<char> m_input;
 
     // Current possition in input buffer
-    int m_input_pos;
+    std::size_t m_input_pos;
 
     // Currently read element from input
     int m_ch;
@@ -20,7 +23,7 @@ class PlangTokenizer {
     public:
 
     // Token values
-    union {
+    struct TokenValue {
         std::string s;
         int i;
         float f;
@@ -29,62 +32,90 @@ class PlangTokenizer {
     // Token types outputed by tokenizer
     struct Token {
         enum {
-            EOF = -1,
-            STR = -2,
+            END = -1,   // EOF!
+            ID = -2,
             INT = -3,
             FLT = -4,
+            STR = -5,
         };
-    };
+    };  // Last read token
+
+    int m_token;    // Last token read
 
     // Load all characters from input
-    void load_input(const T *input, int size) {
-        m_input = std::vector<T>(input, input + size);
+    void load_input(const char *input, int size) {
+        m_input = std::vector<char>(input, input + size);
+        m_input_pos = 0;
+    }
+
+    // Load from string input
+    void load_input(const char *input) {
+        m_input = std::vector<char>(input, input + std::strlen(input));
         m_input_pos = 0;
     }
 
     // Return next element of input buffer
-    int get_next_ch() {
+    int get_next_consume() {
         if (m_input_pos == m_input.size())
-            return Token::EOF;
+            return Token::END;
         return m_input[m_input_pos++];
     }
 
+    // Get next element from the input and store it
+    // in m_ch temporary value buffer to use after call
     int get_next() {
-        return m_ch = get_next_ch();
+        return m_ch = get_next_consume();
+    }
+
+    // Sneak-peak next token
+    int get_next_preview() {
+        if (m_input_pos == m_input.size())
+            return Token::END;
+        return m_input[m_input_pos];
     }
 
     // Parse input and get next token
-    int get_token() {
+    int get_token_val() {
         while (std::isspace(get_next())) {
             // Skipping all whitespaces
         }
 
-        if (m_ch == Token::EOF)
-            return Token::EOF;
+        if (m_ch == Token::END)
+            return Token::END;
 
         if (std::isalpha(m_ch)) {
-            // STRING: alphanumeric
-            m_token_value.s = (char)m_ch;
+            // ID: alphanumeric
+            m_token_value.s = m_ch;
 
-            while (std::isalpha(get_next())) {
-                m_token_value.s += (char)m_ch;
+            while (std::isalpha(get_next_preview())) {
+                m_token_value.s += get_next();
             }
-            return Token::STR;
+            return Token::ID;
         } else if (std::isdigit(m_ch)) {
             // INT: plain integer
             
-            m_token_value.s = (char)m_ch;
+            m_token_value.s = m_ch;
             
-            while (std::isdigit(get_next())) {
-                m_token_value.s += (char)m_ch;
+            while (std::isdigit(get_next_preview())) {
+                m_token_value.s += get_next();
             }
 
-            m_token_value.i = atoi(m_token_value.s.c_str());
+            m_token_value.i = std::atoi(m_token_value.s.c_str());
             return Token::INT;
         }
 
         // Return read character
+        m_token_value.s = m_ch;
         return m_ch;
+    }
+
+    // Get next token and saves int vaue in the buffer
+    int get_token() {
+        return m_token = get_token_val();
+    }
+
+    const TokenValue& get_token_value() {
+        return m_token_value;
     }
 
 };
