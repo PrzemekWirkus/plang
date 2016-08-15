@@ -77,3 +77,17 @@ TEST_CASE( "Tokenize basic string (main)" , "[tokenizer]") {
     REQUIRE(tokenizer.get_token() == PlangTokenizer::Token::END);
 }
 
+
+TEST_CASE( "Tokenize basic keywords" , "[tokenizer]") {
+    // Empty MAIN function definition
+    const char * str_keywords = "return if else";
+
+    PlangTokenizer tokenizer;
+
+    tokenizer.load_input(str_keywords);
+    REQUIRE(tokenizer.get_token() == PlangTokenizer::Token::RETURN);
+    REQUIRE(tokenizer.get_token() == PlangTokenizer::Token::IF);
+    REQUIRE(tokenizer.get_token() == PlangTokenizer::Token::ELSE);
+    REQUIRE(tokenizer.get_token() == PlangTokenizer::Token::END);
+}
+

@@ -40,17 +40,17 @@ class PlangTokenizer {
             STR = -5,
 
             // Language keywords
-            RETURN_STMT = -100,
-            IF_STMT     = -200,
-            ELSE_STMT   = -201,
+            RETURN = -100,
+            IF     = -200,
+            ELSE   = -201,
         };
     };  // Last read token
 
     // Mapping between keyword and token
     std::map<std::string, int> m_keyword_token_map = {
-        {"return",  Token::RETURN_STMT},
-        {"if",      Token::IF_STMT},
-        {"else",    Token::ELSE_STMT},
+        {"return",  Token::RETURN},
+        {"if",      Token::IF},
+        {"else",    Token::ELSE},
     };
 
     int m_token;    // Last token read
@@ -98,6 +98,7 @@ class PlangTokenizer {
 
         if (std::isalpha(m_ch)) {
             // ID: alphanumeric
+            // KEYWORD: alphanumeric
             m_token_value.s = m_ch;
 
             while (std::isalpha(get_next_preview())) {

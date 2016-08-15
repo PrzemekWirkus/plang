@@ -14,13 +14,14 @@ all: $(OBJ_FILES) build/main.o
 	$(CPP) $(LD_FLAGS) $^ -o build/plang
 
 test: $(OBJ_FILES) $(TEST_OBJ_FILES)
-	$(CPP) $(LD_FLAGS) $^ -o test/test_suite
+	$(CPP) $(LD_FLAGS) $^ -o build/test_suite
 
 .PHONY: clean
 
 clean:
 	@echo Cleaning...
-	rm -f $(OBJ_FILES) build/plang
+	rm -rf build/plang build/test_suite
+	rm -rf build/*.o
 
 build/%.o: src/%.cpp
 	$(CPP) $(CPP_FLAGS) $(INCLUDES) -c -o $@ $<
