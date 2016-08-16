@@ -53,8 +53,6 @@ class PlangTokenizer {
         {"else",    Token::ELSE},
     };
 
-    int m_token;    // Last token read
-
     // Load all characters from input
     void load_input(const char *input, int size) {
         m_input = std::vector<char>(input, input + size);
@@ -132,7 +130,7 @@ class PlangTokenizer {
 
     // Get next token and saves int vaue in the buffer
     int get_token() {
-        return m_token = get_token_val();
+        return get_token_val();
     }
 
     const TokenValue& get_token_value() {
