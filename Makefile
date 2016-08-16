@@ -11,16 +11,16 @@ TEST_INCLUDES := -I./test
 
 
 all: $(OBJ_FILES) build/main.o
-	$(CPP) $(LD_FLAGS) $^ -o build/plang
+	$(CPP) $(LD_FLAGS) $^ -o bin/plang
 
 test: $(OBJ_FILES) $(TEST_OBJ_FILES)
-	$(CPP) $(LD_FLAGS) $^ -o build/test_suite
+	$(CPP) $(LD_FLAGS) $^ -o bin/test_suite
 
 .PHONY: clean
 
 clean:
 	@echo Cleaning...
-	rm -rf build/plang build/test_suite
+	rm -rf bin/*
 	rm -rf build/*.o
 
 build/%.o: src/%.cpp
