@@ -43,6 +43,7 @@ class PlangTokenizer {
             RETURN = -100,
             IF     = -200,
             ELSE   = -201,
+            AS     = -202,
         };
     };  // Last read token
 
@@ -51,6 +52,7 @@ class PlangTokenizer {
         {"return",  Token::RETURN},
         {"if",      Token::IF},
         {"else",    Token::ELSE},
+        {"as",      Token::AS},
     };
 
     // Load all characters from input
@@ -85,6 +87,12 @@ class PlangTokenizer {
         return m_input[m_input_pos];
     }
 
+    // like isalpha checks if c is in set of allowed
+    // identifier charset
+    int isidchar(int c) {
+        return std::isalpha(c) || std::isdigit(c) || c == '_';
+    }
+
     // Parse input and get next token
     int get_token_val() {
         while (std::isspace(get_next())) {
@@ -99,7 +107,7 @@ class PlangTokenizer {
             // KEYWORD: alphanumeric
             m_token_value.s = m_ch;
 
-            while (std::isalpha(get_next_preview())) {
+            while (isidchar(get_next_preview())) {
                 m_token_value.s += get_next();
             }
 

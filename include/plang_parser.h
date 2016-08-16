@@ -22,17 +22,21 @@ class PlangParser {
         return error(msg.c_str());
     }
 
-    // Token read from tokenizer (buffer)
+    // Token type and value read from tokenizer (buffer)
     int m_token;
+    TokenValue m_token_value;
 
     // Get token from tokenizer
     // Remember token in member variable
     int get_token() {
-        return m_token = m_tokenizer.get_token();
+        m_token = m_tokenizer.get_token();
+        m_token_value = m_tokenizer.get_token_value();
+        return m_token;
     }
 
+    // Get token payload (int, float, string etc.)
     const TokenValue& get_token_value() {
-        return m_tokenizer.get_token_value();
+        return m_token_value;
     }
 
     // Main parser loop
@@ -44,8 +48,10 @@ class PlangParser {
     // Return:  0 - success
     //         !0 - error
     //
-    int parse_function();  // @ <ID> ( <ARG_LIST> ) { <BLOCK>  }
+    int parse_function();           // @ <ID> ( <ARG_LIST> ) { <BLOCK>  }
     int parse_function_arg_list();  // <ARG_LIST>
+    int parse_block();              // '{' <stmts> '}'
+    int parse_stmt_if();            // IF () ELSE {}
 
     // Load input to tokenizer
     void load_input(const char * input) {
