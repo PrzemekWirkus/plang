@@ -38,6 +38,8 @@ class PlangParser {
     // Main parser loop
     void parser_loop();
 
+    public:
+
     // Parser loop supporting functions
     // Return:  0 - success
     //         !0 - error
@@ -45,12 +47,15 @@ class PlangParser {
     int parse_function();  // @ <ID> ( <ARG_LIST> ) { <BLOCK>  }
     int parse_function_arg_list();  // <ARG_LIST>
 
-    public:
+    // Load input to tokenizer
+    void load_input(const char * input) {
+       m_tokenizer.load_input(input);
+    }
 
     // Parse text input
     void parse_input(const char * input) {
     
-        m_tokenizer.load_input(input);
+        load_input(input);
 
         parser_loop();
     }

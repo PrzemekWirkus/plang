@@ -2,23 +2,25 @@
 #include <string>
 
 
-// Main parser loodp
+// Main parser lood
+// <program> ...
 void PlangParser::parser_loop() {
-
+    // Parser loop, top level program is parsed here
     while (m_tokenizer.get_token() != Token::END) {
-        
-        if (parse_function()) {
+        if (parse_function() == 0) {
+            // Function parsed correctly
+        }
+        else {
             error("unable to parse function!");
         }
     }
-
 }
 
 // '(' ... ')'
 int PlangParser::parse_function_arg_list() {
     // Always success (empty argument list)
     if (get_token() == '(') {
-        if (get_token() != ')') {
+        if (get_token() == ')') {
            
             // Read empty argument list 
             return 0;
@@ -40,7 +42,7 @@ int PlangParser::parse_function() {
             // Function name
             std::string name = get_token_value().s;
 
-            if (parse_function_arg_list()) {
+            if (parse_function_arg_list() == 0) {
 
                 // Parse block
 

@@ -2,7 +2,15 @@
 
 #include "plang_parser.h"
 
-TEST_CASE( "", "[parser]") {
+TEST_CASE( "Parse funcion (basic)", "[parser]") {
 
-    REQUIRE( 1 == 1);
+    // Simple @main funtcion with empty block
+
+    PlangParser parser;
+
+    const char * str_main = "@main() {}";
+
+    parser.load_input(str_main);
+
+    REQUIRE( parser.parse_function() == 0);
 }
