@@ -10,18 +10,26 @@ TEST_OBJ_FILES := $(addprefix build/,$(notdir $(TEST_CPP_FILES:.cpp=.o)))
 TEST_INCLUDES := -I./test
 
 
-all: $(OBJ_FILES) build/main.o
+all: dirs parser
+
+parser: $(OBJ_FILES) build/main.o
 	$(CPP) $(LD_FLAGS) $^ -o bin/plang
 
-test: $(OBJ_FILES) $(TEST_OBJ_FILES)
+test: dirs test_suite
+
+test_suite: $(OBJ_FILES) $(TEST_OBJ_FILES)
 	$(CPP) $(LD_FLAGS) $^ -o bin/test_suite
 
-.PHONY: clean
+.PHONY: clean dirs all test
 
 clean:
 	@echo Cleaning...
 	rm -rf bin/*
 	rm -rf build/*.o
+
+dirs:
+	mkdir -p bin/
+	mkdir -p build/
 
 build/%.o: src/%.cpp
 	$(CPP) $(CPP_FLAGS) $(INCLUDES) -c -o $@ $<
