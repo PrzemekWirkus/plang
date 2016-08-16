@@ -9,18 +9,17 @@ TEST_CPP_FILES := $(wildcard test/*.cpp)
 TEST_OBJ_FILES := $(addprefix build/,$(notdir $(TEST_CPP_FILES:.cpp=.o)))
 TEST_INCLUDES := -I./test
 
+.PHONY: clean dirs all test rebuild
 
 all: dirs parser
+test: dirs parser test_suite
+rebuild: clean all test
 
 parser: $(OBJ_FILES) build/main.o
 	$(CPP) $(LD_FLAGS) $^ -o bin/plang
 
-test: dirs test_suite
-
 test_suite: $(OBJ_FILES) $(TEST_OBJ_FILES)
 	$(CPP) $(LD_FLAGS) $^ -o bin/test_suite
-
-.PHONY: clean dirs all test
 
 clean:
 	@echo Cleaning...
