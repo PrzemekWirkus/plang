@@ -88,10 +88,10 @@ int PlangParser::parse_block() {
 
 
 // Standard IF statements
-// IF ()
+// [done] IF ()
 // IF () ELSE <BLOCK>
 // With extra AS 
-// IF () AS ID <BLOCK>
+// [done] IF () AS ID <BLOCK>
 int PlangParser::parse_stmt_if() {
     // Already loaded IF from tokenizer
     
