@@ -20,17 +20,16 @@ void PlangParser::parser_loop() {
 int PlangParser::parse_function_arg_list() {
     // Always success (empty argument list)
     if (get_token() == '(') {
+
         if (get_token() == ')') {
-           
+
             // Read empty argument list 
             return 0;
 
-        } else {
-            return error("missing ')' in argument list");
-        }
-    } else {
-        return error("missing '(' from function argument list");
-    }
+        } else return error("missing ')' in argument list");
+
+    } else return error("missing '(' from function argument list");
+
     return 0;
 }
 
@@ -38,29 +37,26 @@ int PlangParser::parse_function_arg_list() {
 int PlangParser::parse_function() {
 
     if (get_token() == '@') {
+
         if (get_token() == Token::ID) {
+
             // Function name
             std::string name = get_token_value().s;
 
             if (parse_function_arg_list() == 0) {
 
                 if (get_token() == '{') {
+
                     // Parse whole block with code
                     return parse_block();
-                } else {
-                    return error("missing opening block '{'");
-                }
 
-            } else {
-                return error("error parsing argument list");
-            }
-     
-        } else {
-            return error("expected function name after '@'");
-        }
-    } else {
-        return error("can't find function '@' prefix!");
-    }
+                } else return error("missing opening block '{'");
+
+            } else return error("error parsing argument list");
+
+        } else return error("expected function name after '@'");
+
+    } else return error("can't find function '@' prefix!");
 
     // Success
     return 0;
@@ -68,24 +64,54 @@ int PlangParser::parse_function() {
 
 // '{' <statements> '}'
 int PlangParser::parse_block() {
-   
+
     // If next token is closing block we assume
     // this is an empty block
-    get_token();    // Load m_token with token type
-    
-    if (m_token == '}') {
-        // Immidiate end of block
-        return 0;
-    } else if (m_token == Token::IF) {
-        // IF statement
-        return parse_stmt_if();
-    } else {
-        error("unrecognized expression");
+    //
+    // m_token - should contain opening block
+    get_token();    // Load m_token
+
+    while (m_token != '}') {
+
+        printf(">>> m_token(%d)\n", m_token);
+
+        if (m_token == Token::IF) {
+            // IF statement
+            return parse_stmt_if();
+        } else return error("unrecognized expression");
+
     }
 
+    // m_token == '}' end of block
     return 0;
 }
 
+
+int PlangParser::parse_stmt_if_condition() {
+
+    // IF (val) 
+    //    ^^^^^
+    // IF (val) as id
+    //    ^^^^^^^^^^^
+    // Result: in m_token next token after condition
+
+    const char * if_msg = "in if stmt condition";
+    
+    if (get_token() == '(') {
+        if (get_token() == Token::ID) {
+            if (get_token() == ')') {
+                if (get_token() == Token::AS) {
+                    if (get_token() == Token::ID) {
+                        // IF () AS id
+                        std::string id = get_token_value().s;
+                    } else return error(if_msg, "missing identifier after keyword 'as'");
+                } else return 0; 
+            } else return error (if_msg, "missing closing ')'");
+        } else return error(if_msg, "condition missing");
+    } else return error(if_msg, "missing opening '('");
+    
+    return 0;
+}
 
 // Standard IF statements
 // [done] IF ()
@@ -93,48 +119,29 @@ int PlangParser::parse_block() {
 // With extra AS 
 // [done] IF () AS ID <BLOCK>
 int PlangParser::parse_stmt_if() {
-    // Already loaded IF from tokenizer
+    // Must return in m_token next token after correctly read IF statment
+    // Already loaded IF from tokenize
+
+    const char * if_msg = "in if stmt";
     
-    if (get_token() == '(') {
-   
-        if (get_token() == Token::ID) {
-        
-            if (get_token() == ')') {
+    if (parse_stmt_if_condition() == 0) {
+        // m_token holds token after IF condition
 
-                // Check what is next token
-                get_token();
+        printf("### %d\n", m_token);
 
-                if (m_token == '{') {
-                    // IF () { <BLOCK>  }
-                    return parse_block();
-                } else if (m_token == Token::AS) {
-                    
-                    if (get_token() == Token::ID) {
-                        // IF () AS id
-                        std::string id = get_token_value().s;
-
-                        if (get_token() == '{') {
-                            return parse_block();
-                        } else {
-                            return error("missing block in IF AS statement");
-                        }
-
-                    } else {
-                        return error("missing identifier after keyword 'as' in IF AS statement");
-                    }
-                }
-
-            } else {
-                return error ("missing if statement closing expression ')'");
+        if (m_token == '{') {
+            if (parse_block() == 0) {
+                if (get_token() == Token::ELSE) {
+                    if (get_token() == '{') {
+                        return parse_block();
+                    } else error(if_msg, "missing block opening '{' after else");
+                } else return 0; // No ELSE continues
             }
 
-        } else {
-            return error("if statement expression missing");
-        }
-
-    } else {
-        return error("missing opening if statement expression '('");
-    }
+        } else return error(if_msg, "missing block opening '{'");
     
+    }
+
     return 0;    
 }
+

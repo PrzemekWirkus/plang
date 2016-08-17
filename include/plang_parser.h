@@ -14,12 +14,41 @@ class PlangParser {
     PlangTokenizer m_tokenizer;
 
     // Error message function
-    int error(const char * msg) {
-        return fprintf(stderr, "error: %s\n", msg);
+    void error_begin() {
+        const int line = m_tokenizer.get_line();
+        const int column = m_tokenizer.get_column();
+        fprintf(stderr, "error in [%d, %d]: ", 
+                line,
+                column);
     }
 
+    void error_description() {
+        const int line = m_tokenizer.get_line();
+        const int column = m_tokenizer.get_column();
+        fprintf(stderr, "\t%s\n", 
+                m_tokenizer.get_line_str(line).c_str());
+        
+        fprintf(stderr, "\t");
+        for (int i = 0 ; i < column ; ++i) {
+            fprintf(stderr, " ");
+        }
+        fprintf(stderr, "^\n");
+    }
+    
     int error(const std::string & msg) {
-        return error(msg.c_str());
+        error_begin();
+        fprintf(stderr, "%s\n", msg.c_str());
+        error_description();
+        return m_token;
+    }
+
+    int error(const std::string & prefix, const std::string & msg) {
+        error_begin();
+        fprintf(stderr, "error: %s: %s\n", 
+                prefix.c_str(), 
+                msg.c_str());
+        error_description();
+        return m_token;
     }
 
     // Token type and value read from tokenizer (buffer)
@@ -48,10 +77,11 @@ class PlangParser {
     // Return:  0 - success
     //         !0 - error
     //
-    int parse_function();           // @ <ID> ( <ARG_LIST> ) { <BLOCK>  }
+    int parse_function(); // @ <ID> ( <ARG_LIST> ) { <BLOCK>  }
     int parse_function_arg_list();  // <ARG_LIST>
     int parse_block();              // '{' <stmts> '}'
     int parse_stmt_if();            // IF () ELSE {}
+    int parse_stmt_if_condition();  // ( expression )
 
     // Load input to tokenizer
     void load_input(const char * input) {
