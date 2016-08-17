@@ -7,12 +7,13 @@
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
+#include <algorithm>
 
 
 class PlangTokenizer {
 
     // Input buffer
-    std::vector<char> m_input;
+    std::string m_input;
 
     // Current possition in input buffer
     std::size_t m_input_pos;
@@ -20,7 +21,44 @@ class PlangTokenizer {
     // Currently read element from input
     int m_ch;
 
+    // Counterss
+    int m_input_line;   // Which line it is in the source code (0, 1,2,3...)
+    int m_input_column; // Which column it is in the source code (0, 1,2,3...)
+
+    // Simple input + counters initializer
+    void input_init() {
+        m_input.clear();
+        m_input_pos = 0;
+
+        // Counters
+        m_input_line = 0;
+        m_input_column = 0;
+    }
+
     public:
+
+    // Return counter with current line
+    int get_line() {
+        return m_input_line;
+    }
+
+    // Return counter with current column
+    int get_column() {
+        return m_input_column;
+    }
+
+    // Returns nth line of input
+    std::string get_line_str(const int line) {
+    
+        std::string::iterator b = m_input.begin();
+        std::string::iterator e = m_input.end();
+
+        for (int i = 0 ; i < line ; ++i) {
+            b = std::find(b, e, '\n');
+        }
+
+        return std::string(b, std::find(b, e, '\n'));
+    }
 
     // Token values
     struct TokenValue {
@@ -57,14 +95,14 @@ class PlangTokenizer {
 
     // Load all characters from input
     void load_input(const char *input, int size) {
-        m_input = std::vector<char>(input, input + size);
-        m_input_pos = 0;
+        input_init();
+        m_input = std::string(input, input + size);
     }
 
     // Load from string input
     void load_input(const char *input) {
-        m_input = std::vector<char>(input, input + std::strlen(input));
-        m_input_pos = 0;
+        input_init();
+        m_input = std::string(input);
     }
 
     // Return next element of input buffer
@@ -77,7 +115,15 @@ class PlangTokenizer {
     // Get next element from the input and store it
     // in m_ch temporary value buffer to use after call
     int get_next() {
-        return m_ch = get_next_consume();
+        m_ch = get_next_consume();
+
+        // Collect some counter statistics
+        m_input_column++;
+        if (m_ch == '\n') {
+            m_input_column = 0;
+            m_input_line++;
+        }
+        return m_ch;
     }
 
     // Sneak-peak next token
