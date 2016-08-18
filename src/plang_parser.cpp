@@ -104,8 +104,12 @@ int PlangParser::parse_stmt_if_condition() {
                     if (get_token() == Token::ID) {
                         // IF () AS id
                         std::string id = get_token_value().s;
+
+                        // Load next token to m_token
+                        get_token();
+
                     } else return error(if_msg, "missing identifier after keyword 'as'");
-                } else return 0; 
+                } else return 0;    // m_token contains next token
             } else return error (if_msg, "missing closing ')'");
         } else return error(if_msg, "condition missing");
     } else return error(if_msg, "missing opening '('");
