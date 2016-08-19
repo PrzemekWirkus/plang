@@ -23,7 +23,8 @@ test_suite: $(OBJ_FILES) $(TEST_OBJ_FILES)
 
 clean:
 	@echo Cleaning...
-	rm -rf bin/*
+	rm -rf bin/plang
+	rm -rf bin/test_suite
 	rm -rf build/*.o
 
 dirs:
