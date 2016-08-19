@@ -80,8 +80,11 @@ class PlangParser {
     int parse_function(); // @ <ID> ( <ARG_LIST> ) { <BLOCK>  }
     int parse_function_arg_list();  // <ARG_LIST>
     int parse_block();              // '{' <stmts> '}'
+
     int parse_stmt_if();            // IF () ELSE {}
     int parse_stmt_if_condition();  // ( expression )
+
+    int parse_assignment();         // <ID> = <ID> | <INT> ';'
 
     // Load input to tokenizer
     void load_input(const char * input) {

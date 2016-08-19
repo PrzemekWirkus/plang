@@ -73,8 +73,6 @@ int PlangParser::parse_block() {
 
     while (m_token != '}') {
 
-        printf(">>> m_token(%d)\n", m_token);
-
         if (m_token == Token::IF) {
             // IF statement
             return parse_stmt_if();
@@ -131,8 +129,6 @@ int PlangParser::parse_stmt_if() {
     if (parse_stmt_if_condition() == 0) {
         // m_token holds token after IF condition
 
-        printf("### %d\n", m_token);
-
         if (m_token == '{') {
             if (parse_block() == 0) {
                 if (get_token() == Token::ELSE) {
@@ -147,5 +143,14 @@ int PlangParser::parse_stmt_if() {
     }
 
     return 0;    
+}
+
+// Variable assignment
+// ID = ID ';'
+//    = INT ';'
+
+int PlangParser::parse_assignment() {
+    // TODO
+    return 0;
 }
 

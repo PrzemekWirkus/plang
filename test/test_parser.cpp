@@ -17,6 +17,12 @@ TEST_CASE( "Parse functions definitions (broken)", "[parser][.]" ) {
 
     {
         PlangParser parser;
+        parser.load_input("main() {}");
+        REQUIRE(parser.parse_function() != 0);
+    }
+
+    {
+        PlangParser parser;
         parser.load_input("@main() }");
         REQUIRE(parser.parse_function() != 0);
     }
